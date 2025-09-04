@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  customerId          String        @id @default(cuid())
+  firstName           String
+  lastName            String
+  email               String        @unique
+  phone               String?
+  source              String?
+  lastInteractionDate DateTime?
+  totalSpend          Float         @default(0)
+  customFields        Json?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  // Relationships
+  interactions        Interaction[]
+  tasks               Task[]
+
+  @@map("customers")
+}
+
+model Interaction {
+  interactionId String   @id @default(cuid())
+  customerId    String
+  timestamp     DateTime @default(now())
+  type          String   // e.g., email, call, purchase
+  notes         String?
+  channel       String?
+  dataPayload   Json?
+  createdAt     DateTime @default(now())
+
+  // Relationships
+  customer      Customer @relation(fields: [customerId], references: [customerId], onDelete: Cascade)
+
+  @@map("interactions")
+}
+
+model Task {
+  taskId      String    @id @default(cuid())
+  customerId  String
+  assignedTo  String?   // User ID - for future multi-user support
+  dueDate     DateTime?
+  status      String    @default("open") // open, completed, cancelled
+  description String
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+  updatedAt   DateTime  @updatedAt
+
+  // Relationships
+  customer    Customer  @relation(fields: [customerId], references: [customerId], onDelete: Cascade)
+
+  @@map("tasks")
+}
+
+model DataSource {
+  sourceId String @id @default(cuid())
+  name     String
+  type     String // csv, api, etc.
+  config   Json?  // Configuration for the data source
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  customerImports CustomerImport[]
+
+  @@map("data_sources")
+}
+
+model CustomerImport {
+  importId         String   @id @default(cuid())
+  sourceId         String
+  importTimestamp  DateTime @default(now())
+  status           String   @default("pending") // pending, processing, completed, failed
+  recordsProcessed Int      @default(0)
+  recordsSucceeded Int      @default(0)
+  recordsFailed    Int      @default(0)
+  errorLog         String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relationships
+  dataSource       DataSource @relation(fields: [sourceId], references: [sourceId], onDelete: Cascade)
+
+  @@map("customer_imports")
+}
