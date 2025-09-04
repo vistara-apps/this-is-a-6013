@@ -204,12 +204,12 @@ export default function DataImport() {
   const isImporting = navigation.state === "submitting" && navigation.formData?.get("intent") === "confirm";
 
   // Show preview modal when upload is successful
-  if (actionData?.success && actionData?.preview && !showPreviewModal) {
+  if (actionData && 'success' in actionData && actionData.success && 'preview' in actionData && actionData.preview && !showPreviewModal) {
     setShowPreviewModal(true);
   }
 
   // Show result modal when import is complete
-  if (actionData?.success && actionData?.imported && !showResultModal) {
+  if (actionData && 'success' in actionData && actionData.success && 'imported' in actionData && actionData.imported && !showResultModal) {
     setShowResultModal(true);
   }
 
@@ -334,7 +334,7 @@ export default function DataImport() {
               </div>
             </Form>
 
-            {actionData?.error && (
+            {actionData && 'error' in actionData && actionData.error && (
               <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-[var(--radius-sm)] flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
                 <div>
@@ -372,7 +372,7 @@ export default function DataImport() {
           title="Import Preview"
           className="max-w-4xl"
         >
-          {actionData?.preview && (
+          {actionData && 'success' in actionData && actionData.success && 'preview' in actionData && actionData.preview && (
             <>
               <ModalContent>
                 <div className="space-y-6">
@@ -486,7 +486,7 @@ export default function DataImport() {
           onClose={() => setShowResultModal(false)}
           title="Import Complete"
         >
-          {actionData?.imported && (
+          {actionData && 'success' in actionData && actionData.success && 'imported' in actionData && actionData.imported && (
             <>
               <ModalContent>
                 <div className="text-center space-y-4">

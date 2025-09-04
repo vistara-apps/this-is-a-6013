@@ -180,7 +180,7 @@ function extractCustomFields(row: any): Record<string, any> {
     }
   });
 
-  return Object.keys(customFields).length > 0 ? customFields : undefined;
+  return customFields;
 }
 
 /**

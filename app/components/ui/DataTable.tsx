@@ -1,7 +1,7 @@
 import { cn } from "~/utils/cn";
 
 interface Column<T> {
-  key: keyof T;
+  key: keyof T | string;
   header: string;
   render?: (value: any, row: T) => React.ReactNode;
   className?: string;
@@ -51,8 +51,8 @@ export function DataTable<T>({
               {columns.map((column) => (
                 <td key={String(column.key)} className={column.className}>
                   {column.render 
-                    ? column.render(row[column.key], row)
-                    : String(row[column.key] || '')
+                    ? column.render((row as any)[column.key], row)
+                    : String((row as any)[column.key] || '')
                   }
                 </td>
               ))}
